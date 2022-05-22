@@ -9,8 +9,8 @@ use App\Http\Traits\FetchTag;
 use App\Http\Traits\FetchTrashPost;
 use App\Models\Post;
 use App\Models\Tag;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -31,7 +31,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('category', 'tags')->get();
+        $posts = Post::whereBelongsTo(Auth::user())->with('category', 'tags')->get();
         return view('post.index', compact('posts'));
     }
 
@@ -173,7 +173,7 @@ class PostController extends Controller
      */
     public function trash()
     {
-        $posts = Post::with('category')->onlyTrashed()->get();
+        $posts = Post::whereBelongsTo(Auth::user())->with('category', 'tags')->onlyTrashed()->get();
         return view('post.trash', compact('posts'));
     }
     /**
