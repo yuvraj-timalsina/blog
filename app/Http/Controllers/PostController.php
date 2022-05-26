@@ -58,11 +58,11 @@ class PostController extends Controller
         $image = $request->featured_image->store('posts');
 
         $post = Post::create([
+            'user_id' => auth()->user()->id,
+            'category_id' => $request->category_id,
             'title' => $request->title,
             'content' => $request->content,
             'featured_image' => $image,
-            'user_id' => auth()->user()->id,
-            'category_id' => $request->category_id
         ]);
 
         $attachableTags = [];
@@ -96,6 +96,9 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        if ($post->user_id != auth()->id()) {
+            return abort(403);
+        }
         $categories = $this->fetchCategory();
         $tags = $this->fetchTag();
         return view('post.edit', compact('post', 'categories', 'tags'));
